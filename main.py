@@ -42,22 +42,23 @@ async def on_message(message):
     if message.author.bot:
         return
 
-    # 「鰆」が含まれているかチェック
+    # 1. 「鰆」が含まれているかチェック
     if "鰆" in message.content:
-        await message.channel.send("うおおおおお！！！！！")
+        await message.reply("うおおおおお！！！！！") # replyに変更
         return
 
-    # 直接「さわら」や「さわーらん」と書かれている場合は除外
-    if "さわら" in message.content or "さわーらん" in message.content:
-        return
-
-    # ひらがなに変換
+    # 2. 除外判定（ひらがな化してから判定するとカタカナもカバーできる）
     result = kks.convert(message.content)
     hiragana_text = "".join([item['hira'] for item in result])
+    
+    # 「さわら」「さわーらん」のひらがな版・カタカナ版をまとめてチェック
+    # (pykakasiで変換したhiragana_textで判定するため、ひらがな条件のみでOK)
+    if "さわら" in hiragana_text or "さわーらん" in hiragana_text:
+        return
 
-    # 「さ」→「わ」→「ら」の順番チェック
+    # 3. 「さ」→「わ」→「ら」の順番チェック
     if re.search(r'さ.*わ.*ら', hiragana_text):
-        await message.channel.send("略してさわらやんけ")
+        await message.reply("略してさわらやんけ") # replyに変更
 
 
 # --- 3. トークンの読み込みと実行 ---
